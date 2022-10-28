@@ -48,6 +48,9 @@ export default function Contacts({ contacts, currentUser, changeChat }: any) {
         reader.readAsDataURL(event.target.files[0]);
         reader.onload = async () => {
           var image = await checkImage(reader);
+          if (image.width === 0 || image.height === 0) {
+            return toast.error('Error, try again!', ToastOptionsObject);
+          }
           if (image.width !== 128 || image.height !== 128) {
             return toast.error('Avatar must be 128x128.', ToastOptionsObject);
           }
