@@ -1,49 +1,48 @@
-import "dotenv/config";
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
+import 'dotenv/config';
+import Hapi from '@hapi/hapi';
+import mongoose, { mongo } from 'mongoose';
 import userRoutes from './routes/userRoutes';
-import messagesRoute from './routes/messagesRoute';
+import messagesRoute from './routes/messagesRoutes';
 import { Server } from 'socket.io';
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.use('/api/auth', userRoutes);
-app.use('/api/messages', messagesRoute);
-
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => console.log('Successfully connected to MongoDB'))
-  .catch((err) => console.error(err.message));
-
-const PORT = process.env.PORT || 2000;
-
-const server = app.listen(PORT, () => {
-  console.log('Server listening to PORT ' + PORT);
-});
-
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  },
-});
-
-const onlineUsers = new Map();
-
-io.on('connection', (socket) => {
-  const chatSocket = socket;
-  socket.on('add-user', (userId) => {
-    onlineUsers.set(userId, socket.id);
+(async () => {
+  const server = new Hapi.Server({
+    port: process.env.PORT || 2000,
+    host: 'localhost',
+    routes: {
+      cors: true,
+    },
   });
 
-  socket.on('send-msg', (data) => {
-    const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
-      socket.to(sendUserSocket).emit('msg-recieved', data.message);
-    }
+  server.route(messagesRoute);
+  server.route(userRoutes);
+
+  await server.start();
+
+  await mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => console.log('Successfully connected to MongoDB'))
+    .catch((err) => console.error(err.message));
+
+  const io = new Server(server.listener, {
+    cors: {
+      origin: 'http://localhost:3000',
+      credentials: true,
+    },
   });
-});
+
+  const onlineUsers: Map<string, string> = new Map();
+
+  io.on('connection', (socket) => {
+    socket.on('add-user', (userId) => {
+      onlineUsers.set(userId, socket.id);
+    });
+
+    socket.on('send-msg', (data) => {
+      const sendUserSocket = onlineUsers.get(data.to);
+      if (sendUserSocket) {
+        socket.to(sendUserSocket).emit('msg-recieved', data.message);
+      }
+    });
+  });
+})();

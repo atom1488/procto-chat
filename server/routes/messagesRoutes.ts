@@ -1,15 +1,17 @@
 import { addMessage, getAllMessages } from '../controllers/messagesController';
 import { ServerRoute } from '@hapi/hapi';
 
-export const messagesRoutes: ServerRoute[] = [
+const messagesRoutes: ServerRoute[] = [
   {
     method: 'POST',
-    path: '/addmsg/',
+    path: '/api/messages/addmsg',
     handler: addMessage,
   },
   {
     method: 'POST',
-    path: '/getmsg',
+    path: '/api/messages/getmsg',
     handler: getAllMessages,
   },
 ];
+
+export default messagesRoutes;

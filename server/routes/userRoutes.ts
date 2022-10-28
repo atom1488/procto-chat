@@ -1,14 +1,27 @@
-import { Router } from 'express';
 import { register, login, setAvatar, getAllUsers } from '../controllers/userController';
+import { ServerRoute } from '@hapi/hapi';
 
-const router = Router();
+const usersRoutes: ServerRoute[] = [
+  {
+    method: 'POST',
+    path: '/api/auth/register',
+    handler: register,
+  },
+  {
+    method: 'POST',
+    path: '/api/auth/login',
+    handler: login,
+  },
+  {
+    method: 'POST',
+    path: '/api/auth/setAvatar/{id}',
+    handler: setAvatar,
+  },
+  {
+    method: 'GET',
+    path: '/api/auth/allUsers/{id}',
+    handler: getAllUsers,
+  },
+];
 
-router.post('/register', register);
-
-router.post('/login', login);
-
-router.post('/setAvatar/:id', setAvatar);
-
-router.get('/allUsers/:id', getAllUsers);
-
-export default router;
+export default usersRoutes;

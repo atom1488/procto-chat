@@ -2,7 +2,7 @@ import messageModel, { Message } from '../models/messageModel';
 import { Request, ResponseToolkit } from '@hapi/hapi';
 
 export const addMessage = async (request: Request, h: ResponseToolkit) => {
-  const { from, to, message } = request.query.body;
+  const { from, to, message } = request.payload as { from: string; to: string; message: string };
 
   const data = await messageModel.create({
     message: { text: message },
@@ -16,7 +16,7 @@ export const addMessage = async (request: Request, h: ResponseToolkit) => {
 };
 
 export const getAllMessages = async (request: Request, h: ResponseToolkit) => {
-  const { from, to } = request.query.body;
+  const { from, to } = request.payload as { from: string; to: string };
 
   const messages = await messageModel
     .find({
