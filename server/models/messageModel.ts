@@ -1,15 +1,17 @@
 import mongoose, { Schema } from 'mongoose';
 
-export interface User {
+export interface Message {
   _id: mongoose.Types.ObjectId;
-  username: string;
-  email: string;
-  password: string;
-  isAvatarImageSet: boolean;
-  avatarImage: string;
+  message: {
+    text: string;
+  };
+  users: mongoose.Schema.Types.Array;
+  sender: mongoose.Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const messageSchema = new Schema(
+const messageSchema = new Schema<Message>(
   {
     message: {
       text: {
