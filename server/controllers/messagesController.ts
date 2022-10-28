@@ -1,43 +1,37 @@
-import messageModel from '../models/messageModel';
+import messageModel, { Message } from '../models/messageModel';
+import { Request, ResponseToolkit } from '@hapi/hapi';
 
-export const addMessage = async (req, res, next) => {
-  try {
-    const { from, to, message } = req.body;
+export const addMessage = async (request: Request, h: ResponseToolkit) => {
+  const { from, to, message } = request.query.body;
 
-    const data = await messageModel.create({
-      message: { text: message },
-      users: [from, to],
-      sender: from,
-    });
+  const data = await messageModel.create({
+    message: { text: message },
+    users: [from, to],
+    sender: from,
+  });
 
-    if (data) return res.json({ msg: 'Message added successfully ' });
+  if (data) return h.response({ msg: 'Message added successfully' });
 
-    return res.json({ msg: 'Failed to add message to the database.' });
-  } catch (ex) {
-    next(ex);
-  }
+  return h.response({ msg: 'Failed to add message to  the database.' });
 };
 
-export const getAllMessages = async (req, res, next) => {
-  try {
-    const { from, to } = req.body;
-    const messages = await messageModel
-      .find({
-        users: {
-          $all: [from, to],
-        },
-      })
-      .sort({ updatedAt: 1 });
+export const getAllMessages = async (request: Request, h: ResponseToolkit) => {
+  const { from, to } = request.query.body;
 
-    const projectMessages = messages.map((msg) => {
-      return {
-        fromSelf: msg.sender.toString() === from,
-        message: msg.message.text,
-      };
-    });
+  const messages = await messageModel
+    .find({
+      users: {
+        $all: [from, to],
+      },
+    })
+    .sort({ updatedAt: 1 });
 
-    res.json(projectMessages);
-  } catch (ex) {
-    next(ex);
-  }
+  const projectMessages = messages.map((msg: Message) => {
+    return {
+      fromSelf: msg.sender.toString() === from,
+      message: msg.message.text,
+    };
+  });
+
+  return h.response(projectMessages);
 };

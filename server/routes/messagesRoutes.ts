@@ -1,9 +1,15 @@
-import { Router } from 'express';
 import { addMessage, getAllMessages } from '../controllers/messagesController';
+import { ServerRoute } from '@hapi/hapi';
 
-const router = Router();
-
-router.post('/addmsg/', addMessage);
-router.post('/getmsg/', getAllMessages)
-
-export default router;
+export const messagesRoutes: ServerRoute[] = [
+  {
+    method: 'POST',
+    path: '/addmsg/',
+    handler: addMessage,
+  },
+  {
+    method: 'POST',
+    path: '/getmsg',
+    handler: getAllMessages,
+  },
+];
