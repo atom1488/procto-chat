@@ -34,37 +34,41 @@ export default function Contacts({ contacts, currentUser, changeChat }: any) {
   };
 
   const checkImage = async (file: FileReader) => {
-    var image = new Image();
-    image.src = file.result! as string;
-    var width = image.width;
-    var height = image.height;
-    return { width, height };
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      var image = new Image();
+
+      image.src = file.result! as string;
+      image.onload = () => {
+        resolve(image);
+      };
+
+      image.onerror = reject;
+    });
   };
 
   const onSelectFile = (event: any) => {
-    (async () => {
-      if (event.target.files && event.target.files.length > 0) {
-        const reader = new FileReader();
-        reader.readAsDataURL(event.target.files[0]);
-        reader.onload = async () => {
-          var image = await checkImage(reader);
-          if (image.width === 0 || image.height === 0) {
-            return toast.error('Error, try again!', ToastOptionsObject);
-          }
-          if (image.width !== 128 || image.height !== 128) {
-            return toast.error('Avatar must be 128x128.', ToastOptionsObject);
-          }
-          const result = reader.result!.toString().substring(22);
-          await axios.post(`${setAvatarRoute}/${currentUser._id}`, {
-            image: result,
-          });
-          const user = await JSON.parse(localStorage.getItem('procto-chat-user')!);
-          user.avatarImage = result;
-          localStorage.setItem('procto-chat-user', JSON.stringify(user));
-          window.location.reload();
-        };
-      }
-    })();
+    if (event.target.files && event.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]);
+      reader.onload = async () => {
+        var image = await checkImage(reader);
+        console.log(image.width, image.height);
+        if (image.width === 0 || image.height === 0) {
+          return toast.error('Error, try again!', ToastOptionsObject);
+        }
+        if (image.width !== 128 || image.height !== 128) {
+          return toast.error('Avatar must be 128x128.', ToastOptionsObject);
+        }
+        const result = reader.result!.toString().substring(22);
+        await axios.post(`${setAvatarRoute}/${currentUser._id}`, {
+          image: result,
+        });
+        const user = await JSON.parse(localStorage.getItem('procto-chat-user')!);
+        user.avatarImage = result;
+        localStorage.setItem('procto-chat-user', JSON.stringify(user));
+        window.location.reload();
+      };
+    }
   };
 
   return (
