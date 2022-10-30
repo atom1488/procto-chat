@@ -1,17 +1,46 @@
 # ProctoChat
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
-## Procto-Chat is a chat app that uses React, Express, MongoDB and socket.io
+## Procto-Chat is a chat app that uses React, Hapi, MongoDB and socket.io
 
-This app has a Login page, a Register page, it has also an avatar system (bad one). You can chat with multiple people!
+This app has a Login page, a Register page, it has also an avatar system. You can chat with multiple people!
 
-## How to install the App
+## Run Locally
 
-1. Clone this project
-2. Install [nodejs](https://nodejs.org/)
-3. In the ./public directory, do `yarn install`
-4. Do `yarn install` also in the ./server directory
-5. Create a `.env` file and put inside `MONGO_URL = ` and put your own Mongo URI.
-6. Then run the app using `yarn start` in the server directory and public directory.
+Clone the project
+
+```bash
+  git clone https://github.com/atom1488/procto-chat.git
+```
+
+Go to the public directory and install dependencies
+
+```bash
+  cd public
+  yarn install
+```
+
+Then go back to the root and go to the server directory, create a .env file and install dependencies
+
+```bash
+  cd ../server
+  echo "MONGO_URL = " > .env
+  yarn install
+```
+
+And start the server
+
+```bash
+  yarn start
+```
+
+Then, go to the public directory and start the app
+
+```bash
+  cd ../public
+  yarn start
+```
+
 
 ## API Reference
 
