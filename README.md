@@ -20,7 +20,7 @@ This app has a Login page, a Register page, it has also an avatar system (bad on
 ```http
   POST /api/auth/register
 ```
- username, email, password 
+
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `username` | `string` | **Required**. Username of the account |
